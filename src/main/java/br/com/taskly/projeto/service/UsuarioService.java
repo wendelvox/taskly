@@ -3,6 +3,7 @@ package br.com.taskly.projeto.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.taskly.projeto.dto.UsuarioDTO;
@@ -16,6 +17,9 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository;
 
 	
+	@Autowired
+	private PasswordEncoder passwordEnconder;
+	
 	public List<UsuarioDTO> listaTodos(){
 		List<UsuarioEntity> usuarioEntity = usuarioRepository.findAll();
 		return usuarioEntity.stream().map(UsuarioDTO::new).toList();
@@ -24,11 +28,13 @@ public class UsuarioService {
 	
 	public void inserir(UsuarioDTO usuario) {
 		UsuarioEntity usuarioEntity = new UsuarioEntity(usuario);
+		usuarioEntity.setSenha(passwordEnconder.encode(usuario.getSenha()));
 		usuarioRepository.save(usuarioEntity);
 	}
 	
 	public UsuarioDTO alterar(UsuarioDTO usuario) {
 		UsuarioEntity usuarioEntity = new UsuarioEntity(usuario);
+		usuarioEntity.setSenha(passwordEnconder.encode(usuario.getSenha()));
 		return new UsuarioDTO(usuarioRepository.save(usuarioEntity));
 	}
 	
